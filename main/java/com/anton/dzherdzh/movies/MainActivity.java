@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = (RecyclerView) findViewById(R.id.Recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
 
         staggeredGridLayoutManagerVertical = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 
@@ -43,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
-        adapter.addAll(ModelItem.getFakeItems());
+        adapter.addAll(MovieItem.getFakeItems());
 
+        //TODO db
     }
 
     @Override
@@ -57,12 +58,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
-        private ArrayList<ModelItem> items = new ArrayList<>();
+    public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+        private List<MovieItem> items = new ArrayList<>();
 
-        public void addAll(List<ModelItem> fakeItems) {
+        public void addAll(List<MovieItem> movieItems) {
             int pos = getItemCount();
-            this.items.addAll(fakeItems);
+            this.items.addAll(movieItems);
             notifyItemRangeInserted(pos, this.items.size());
         }
 
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerViewHolder holder, int position) {
             holder.bind(items.get(position));
+            holder.movie = items.get(position);
         }
 
         @Override
@@ -87,17 +89,18 @@ public class MainActivity extends AppCompatActivity {
         private TextView title;
         private ImageView image;
 
-        private ModelItem movie;
+        public MovieItem movie;
 
         public RecyclerViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             title = (TextView) itemView.findViewById(R.id.title);
             image = (ImageView) itemView.findViewById(R.id.image);
         }
 
-        public void bind(ModelItem modelItem) {
-            image.setImageBitmap(BitmapFactory.decodeResource(itemView.getResources(), modelItem.getImgId()));
-            title.setText(modelItem.getName());
+        public void bind(MovieItem movieItem) {
+            image.setImageBitmap(BitmapFactory.decodeResource(itemView.getResources(), movieItem.getImgId()));
+            title.setText(movieItem.getName());
         }
 
         @Override
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, FullImageActivity.class);
             i.putExtra("title", movie.getName());
             i.putExtra("id", movie.getImgId());
-           startActivity(i);
+            startActivity(i);
         }
     }
 }
